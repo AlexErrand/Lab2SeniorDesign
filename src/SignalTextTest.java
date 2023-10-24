@@ -1,6 +1,10 @@
 import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class SignalTextTest {
 
@@ -32,7 +36,7 @@ public class SignalTextTest {
                     System.out.println(receivedData);
                     if (receivedData.equals("1") && !textSent) {
                         textSent = true;
-                        String textMessage = "Test";
+                        String textMessage = "Critical Safety Event at " + getCurrentTimeAsString() + " on " + getCurrentDateAsString();
                         SendText.sendATextToPhone(textMessage);
                     } else if (!receivedData.equals("1")) {
                         textSent = false;
@@ -44,7 +48,18 @@ public class SignalTextTest {
         });
     }
 
+    public String getCurrentTimeAsString() {
+        LocalDateTime now = LocalDateTime.now();
+        return now.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    public String getCurrentDateAsString() {
+        LocalDate today = LocalDate.now();
+        return today.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
+    }
+
     public static void main(final String[] args) {
         SignalTextTest demo = new SignalTextTest();
+        System.out.println(demo.getCurrentDateAsString());
     }
 }
