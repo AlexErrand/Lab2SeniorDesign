@@ -2,21 +2,16 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
-
 public class SignalTextTest {
+
+    private boolean textSent = false;
     private SerialPort arduinoPort; // Serial port for Arduino communication
-    // update but do not commit the actual values for these
-    public static final String ACCOUNT_SID = "ACf5200104419f75389ab80c169cd5b6c0";
-    public static final String AUTH_TOKEN = "5aa6bbba131cc143ee39a9101c23c2cd";
 
     public SignalTextTest() {
         // Initialize the Arduino serial port (change the port name as needed)
-        arduinoPort = SerialPort.getCommPort("COM4"); // Change this to your Arduino's port
+        arduinoPort = SerialPort.getCommPort("COM3"); // Change this to your Arduino's port
         arduinoPort.openPort();
-        arduinoPort.setBaudRate(115200); // Set the correct baud rate
+        arduinoPort.setBaudRate(9600); // Set the correct baud rate
 
         // Add a data listener to receive data from Arduino
         arduinoPort.addDataListener(new SerialPortDataListener() {
@@ -31,20 +26,17 @@ public class SignalTextTest {
                     return;
                 byte[] newData = new byte[arduinoPort.bytesAvailable()];
                 int numRead = arduinoPort.readBytes(newData, newData.length);
-                String receivedData = new String(newData);
-
+                //System.out.println(numRead);
+                String receivedData = new String(newData).trim();
                 try {
-                    // Parse the received data as a double and add it to the graph
-                    double temperature = Double.parseDouble(receivedData.trim());
-
-                    if (temperature > 80) {
-                        String warningMessage = "Warning: There was a reported temperature of " + temperature + " at " + " seconds, please evacuate";
-                        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-                        Message message = Message.creator(new PhoneNumber("+13195310040"), new PhoneNumber("+18775666567"), warningMessage).create();
-                        System.out.println(message.getSid());
-                        System.out.println(warningMessage);
+                    System.out.println(receivedData);
+                    if (receivedData.equals("1") && !textSent) {
+                        textSent = true;
+                        String textMessage = "Test";
+                        SendText.sendATextToPhone(textMessage);
+                    } else if (!receivedData.equals("1")) {
+                        textSent = false;
                     }
-
                 } catch (NumberFormatException e) {
                     System.err.println("Invalid data received from Arduino: " + receivedData);
                 }
