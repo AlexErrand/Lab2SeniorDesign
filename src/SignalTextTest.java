@@ -5,7 +5,7 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 public class SignalTextTest {
 
     private boolean textSent = false;
-    private SerialPort arduinoPort; // Serial port for Arduino communication
+    private final SerialPort arduinoPort; // Serial port for Arduino communication
 
     public SignalTextTest() {
         // Initialize the Arduino serial port (change the port name as needed)
@@ -26,7 +26,7 @@ public class SignalTextTest {
                     return;
                 byte[] newData = new byte[arduinoPort.bytesAvailable()];
                 int numRead = arduinoPort.readBytes(newData, newData.length);
-                //System.out.println(numRead);
+                System.out.println("Bytes read:" + numRead);
                 String receivedData = new String(newData).trim();
                 try {
                     System.out.println(receivedData);
