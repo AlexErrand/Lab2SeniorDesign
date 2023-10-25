@@ -25,7 +25,7 @@ void setup() {
 }
 
 void loop() {
-  delay(100); 
+  // delay(100); 
   int sensorValue = analogRead(sensorPin);
 
   /* SAMPLING */
@@ -51,11 +51,13 @@ void loop() {
   determineInterference(sensorValue);
   // if there is an interference turn on led and send the flag to the serial monitor
   if (interference == 1) {
+    // interference
     digitalWrite(ledPin, HIGH);
     Serial.println("1");
   } else {
+    // signal detected
     digitalWrite(ledPin, LOW);
-    //Serial.println("0");
+    Serial.println("0");
   }
 }
 

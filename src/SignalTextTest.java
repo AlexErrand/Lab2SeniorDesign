@@ -31,13 +31,15 @@ public class SignalTextTest {
                 byte[] newData = new byte[arduinoPort.bytesAvailable()];
                 int numRead = arduinoPort.readBytes(newData, newData.length);
                 String receivedData = new String(newData).trim();
-                System.out.println(receivedData);
+                System.out.println(numRead + " Bytes: " + receivedData);
                 if (receivedData.equals("1") && !textSent) {
                     textSent = true;
-                    String textMessage = "Critical Safety Event at " + getCurrentTimeAsString() + " on " + getCurrentDateAsString();
+                    String currentTime = getCurrentTimeAsString();
+                    String currentDate = getCurrentDateAsString();
+                    String textMessage = "Critical Safety Event at " + currentTime + " on " + currentDate;
                     SendText.sendATextToPhone(textMessage);
                     System.out.println("TEXT SENT");
-                } else if (!receivedData.equals("1") && numRead == 1) {
+                } else if (receivedData.equals("0")) {
                     textSent = false;
                     System.out.println("SIGNAL RECONNECTED - READY TO SEND TEXT");
                 }
@@ -57,6 +59,7 @@ public class SignalTextTest {
 
     public static void main(final String[] args) {
         SignalTextTest demo = new SignalTextTest();
+        System.out.println(demo.getCurrentTimeAsString());
         System.out.println(demo.getCurrentDateAsString());
     }
 }
