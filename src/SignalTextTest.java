@@ -30,19 +30,16 @@ public class SignalTextTest {
                     return;
                 byte[] newData = new byte[arduinoPort.bytesAvailable()];
                 int numRead = arduinoPort.readBytes(newData, newData.length);
-                System.out.println("Bytes read:" + numRead);
                 String receivedData = new String(newData).trim();
-                try {
-                    System.out.println(receivedData);
-                    if (receivedData.equals("1") && !textSent) {
-                        textSent = true;
-                        String textMessage = "Critical Safety Event at " + getCurrentTimeAsString() + " on " + getCurrentDateAsString();
-                        SendText.sendATextToPhone(textMessage);
-                    } else if (!receivedData.equals("1")) {
-                        textSent = false;
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid data received from Arduino: " + receivedData);
+                System.out.println(receivedData);
+                if (receivedData.equals("1") && !textSent) {
+                    textSent = true;
+                    String textMessage = "Critical Safety Event at " + getCurrentTimeAsString() + " on " + getCurrentDateAsString();
+                    SendText.sendATextToPhone(textMessage);
+                    System.out.println("TEXT SENT");
+                } else if (!receivedData.equals("1") && numRead == 1) {
+                    textSent = false;
+                    System.out.println("SIGNAL RECONNECTED - READY TO SEND TEXT");
                 }
             }
         });
